@@ -1,6 +1,6 @@
 import { createModule, gql } from "graphql-modules";
 
-const UserModule = createModule({
+export const UserModule = createModule({
 	id: "user",
 	dirname: __dirname,
 	typeDefs: gql`
@@ -16,5 +16,3 @@ const UserModule = createModule({
 		},
 	},
 });
-
-export default UserModule;

@@ -1,10 +1,12 @@
 import {
+	CONTEXT,
 	createModule,
 	gql,
 	InjectionToken,
 	Scope,
-	CONTEXT,
 } from "graphql-modules";
+
+import { LoggerToken } from "../shared/Logger";
 
 interface IAuthenticatedUser {
 	_id: number;
@@ -14,7 +16,7 @@ const AuthenticatedUser = new InjectionToken<IAuthenticatedUser>(
 	"authenticated-user"
 );
 
-const AuthModule = createModule({
+export const AuthModule = createModule({
 	id: "auth",
 	dirname: __dirname,
 	typeDefs: gql`
@@ -33,11 +35,12 @@ const AuthModule = createModule({
 		{
 			provide: AuthenticatedUser,
 			scope: Scope.Operation,
-			deps: [CONTEXT],
-			useFactory(ctx: GraphQLModules.GlobalContext) {
-				const authHeader = ctx.request.headers.authorization;
-
-				console.log({ authHeader });
+			deps: [CONTEXT, LoggerToken],
+			useFactory({ request }: GraphQLModules.GlobalContext, logger: any) {
+				const { authorization } = request.headers;
+				if (authorization) {
+					logger.info({ authorization });
+				}
 
 				return {
 					id: 1,
@@ -47,5 +50,3 @@ const AuthModule = createModule({
 		},
 	],
 });
-
-export default AuthModule;
